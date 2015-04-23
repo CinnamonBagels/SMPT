@@ -1,0 +1,15 @@
+<html>
+	<link rel="stylesheet" href="./css/app.css">
+	<link rel="stylesheet" href="./css/foundation.min.css">
+	<body>
+		{{> topbar}}
+		{{{body}}}
+		<script src="./js/jquery.min.js"></script>
+		<script src="./js/foundation.min.js"></script>
+		<script>
+		$(document).ready(function() {
+			$(document).foundation();
+		});
+		</script>
+	</body>
+</html>

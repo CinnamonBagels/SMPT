@@ -1,0 +1,30 @@
+<a id="generate_keypair_button" href="">Generate New Keypair</a>
+<div id="keypair_status">
+	
+</div>
+
+<script src="./js/generateKP.js"></script>
+<script>
+	function generateProgressBar() {
+
+	};
+
+	var downloadLink;
+	var downloadText = 'Download your keypair';
+	var downloadTextNode;
+	var dataType = 'data:application/octet-stream';
+	var charset = 'charset=utf-8';
+	
+	document.getElementById('generate_keypair_button').addEventListener('click', function(event) {
+		event.preventDefault();
+		if(typeof localStorage !== 'undefined') {
+			keyPairGenerator.generateKeyPair(function(keypair) {
+				localStorage.setItem('private_key', keypair.private);
+				console.log(keypair.private);
+				
+			});
+		} else {
+			//you have no local storage, please use a browser that has local storage.
+		}
+	});
+</script>
