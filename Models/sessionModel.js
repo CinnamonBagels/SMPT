@@ -14,11 +14,10 @@ autoIncrement.initialize(db);
 //3 : done
 var sessionModel = new Schema({
 	time_created : { type : Date, default : Date.now },
-	time_end : Date,
 	title : String,
 	description : String,
 	random_data : { type : Object, default : {} },
-	aggregate_data : { type : Object, default : null },
+	aggregate_data : { type : Object, default : {} },
 	invited_participants : { type : Object, default : [] },
 	confirmed_participants : { type : Object, default : [] },
 	confirmed_participant_publickeys : { type : Object, default : [] },

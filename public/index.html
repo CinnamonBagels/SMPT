@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="app">
+<head>
+	<base href="/">
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="./assets/css/app.css">
+	<link rel="stylesheet" href="./assets/css/foundation.css">
+	<script src="./assets/js/vendor/modernizr.js"></script>
+	<title>Home</title>
+</head>
+<body>
+	<div ng-controller="IndexController">
+		<div ng-view>
+			
+		</div>
+	</div>
+	<script src="./assets/js/angular.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.7/angular-resource.min.js"></script>
+	<script src="https://code.angularjs.org/1.3.9/angular-route.js"></script>
+	<script src="./app/app.routes.js"></script>
+	<script>
+		angular.module('app', ['ngRoute'])
+		.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
+			$routeProvider
+				.when('/', {
+					templateUrl : 'app/components/Login/login.html',
+					controller : 'LoginController'
+				})
+				.when('/sessions', {
+					templateUrl : 'app/components/Session/sessions.html',
+					controller : 'SessionController'
+				})
+				.when('/sessions/new', {
+					templateUrl : 'app/components/Session/newSession.html',
+					controller : 'SessionController'
+				})
+				.when('/home', {
+					templateUrl : 'app/components/Account/account.html',
+					controller : 'AccountController'
+				})
+				.otherwise({
+					redirectTo : '/'
+				});
+			$locationProvider.html5Mode({
+				enabled : true,
+				requireBase : false
+			});
+		}])
+		.factory('AccountService', ['$http', '$window', function($http, $window) {
+			var worker;
+			var keypair;
+
+			function generateKeyPair(callback) {
+				if(typeof Worker !== 'undefined') {
+					worker = new Worker('./assets/js/bundle.js');
+
+					worker.onmessage = function(event) {
+						return callback(event.data);
+					}
+				} else {
+					//if they dont have keypair, manually execute.
+				}
+			}
+
+			function terminateWorker() {
+				worker.terminate();
+			}
+
+			function sendKey() {
+				return $http.post('/publickey',
+							{
+								publicKey : keypair.public
+							});
+			}
+
+			return {
+				createKeypair : function() {
+					if(typeof localStorage !== 'undefined') {
+						generateKeyPair(function(keypair) {
+							localStorage.setItem('private_key', keypair.private);
+							sendKey(keypair.public);
+						});
+					} else {
+						//you have no local storage, please use a browser that has local storage.
+					}
+				}
+			}
+		}])
+		.factory('SessionService', ['$http', function($http) {
+			return {
+				getPendingInvites : function() {
+					return $http.get('/sessions/pendingInvites');
+				},
+
+				getActiveSessions : function() {
+					return $http.get('/sessions/activeSessions');
+				},
+
+				getCreatedSessions : function() {
+					return $http.get('/sessions/createdSessions');
+				},
+
+				getSession : function(sessionID) {
+					return $http.get('/sessions/' + sessionId);
+				},
+
+				newSession : function(title, description, invitedParticipants) {
+					return $http.post('/sessions/newSession', 
+						{ title : title, 
+						  description : description,
+						  invited_participants : invitedParticipants 
+						});
+				},
+
+				inviteByEmail : function(email) {
+					return $http.post('/sessions/newSession/invite',
+					{
+						email : email
+					});
+				}
+			}
+		}])
+		.factory('UserService', ['$http', function($http) {
+			return {
+				login : function(email, password) {
+					return $http.post('/login', { email : email, password : password });
+				},
+				logout : function() {
+					return $http.post('/logout');
+				},
+				register : function(name, email, password, region) {
+					return $http.post('/register',
+					{ 
+						name : name,
+						email : email,
+					  	password : password,
+					  	region : region 
+					});
+				}
+			}
+		}])
+		.controller('IndexController', ['$scope', '$http', function($scope, $http) {
+			//empty
+		}])
+		.controller('AccountController', ['$scope', '$window', 'AccountService', function($scope, $window, AccountService) {
+			$scope.createKeypair = function() {
+				AccountService.createKeypair().success(function(data, status) {
+					console.log(data, status);
+				});
+			}
+		}])
+		.controller('SessionController', ['$scope', 'SessionService', function($scope, SessionService) {
+
+			$scope.emails = [];
+
+			SessionService.getPendingInvites().success(function(invites, status) {
+				$scope.pendingInvites = invites;
+			});
+
+			SessionService.getActiveSessions().success(function(sessions, status) {
+				$scope.activeSessions = sessions;
+			});
+
+			SessionService.getCreatedSessions().success(function(sessions, status) {
+				$scope.createdSessions = sessions;
+			});
+
+			$scope.newSession = function(title, description) {
+				SessionService.newSession(title, description, $scope.emails).success(function(data, status) {
+						console.log(data, status);
+				});
+			}
+
+			$scope.inviteByEmail = function(email) {
+				console.log(email);
+				SessionService.inviteByEmail(email).success(function(data, status) {
+					console.log(data, status);
+					if(status === 200) $scope.emails.push(email);
+				});
+			}
+		}])
+		.controller('LoginController', ['$scope', 'UserService', function($scope, UserService) {
+			$scope.login = function(email, password) {
+				UserService.login(email, password).success(function(data, status) {
+					console.log(status);
+					console.log(data);
+				});
+			}
+			$scope.register = function(name, register_email, password, region) {
+				UserService.register(name, email, password, region).success(function(data, status) {
+					console.log(data, status);
+				});
+			}
+		}]);
+	</script>
+	<script src="./assets/js/jquery.min.js"></script>
+	<script src="./assets/js/foundation.min.js"></script>
+	<script>
+	$(document).ready(function() {
+		$(document).foundation();
+	});
+	</script>
+</body>
+</html>

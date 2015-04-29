@@ -1,0 +1,38 @@
+<div class="row">
+	<div class="columns large-12">	
+		<form>
+		<div class="row">
+			<div class="columns large-12">
+				<input type="text" ng-model="title" Placeholder="Session Title">
+			</div>
+		</div>
+		<div class="row">
+			<div class="columns large-12">
+				<textarea ng-model="description" Placeholder="Description"></textarea>
+			</div>
+		</div>
+		<div class="row">
+			<div class="row">
+				<div class="columns large-8">
+					<input type="text" ng-model="email" Placeholder="Invite by email">
+				</div>
+				<div class="columns large-4">
+					<a class="button success" ng-click="inviteByEmail(email)">Invite</a>
+				</div>
+			</div>
+			<div class="row" ng-repeat="email in emails">
+				<div class="row">
+					<div class="columns large-12 text-center">
+						{{email}}
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="columns large-12">
+				<a class="button button-success" ng-click="newSession(title, description)">Create New Session</a>
+			</div>
+		</div>
+		</form>
+	</div>
+</div>

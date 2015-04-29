@@ -1,4 +1,4 @@
-module.exports.data = [
+var data = [
 	'AA',
 	'AT',
 	'AC',
@@ -17,6 +17,8 @@ module.exports.data = [
 	'GG'
 ];
 
+module.exports.data = data;
+
 module.exports.generateRandomData = function() {
 	var i;
 	var randomData = {
@@ -24,11 +26,11 @@ module.exports.generateRandomData = function() {
 		control : {}
 	};
 
-	genotypes.forEach(function(genotype) {
+	data.forEach(function(genotype) {
 		randomData.case[genotype] = Math.floor(Math.random() * 1000000) * 34;
 	});
 
-	genotypes.forEach(function(genotype) {
+	data.forEach(function(genotype) {
 		randomData.control[genotype] = Math.floor(Math.random() * 1000000) * 34;
 	});
 

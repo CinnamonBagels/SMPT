@@ -5,8 +5,14 @@ var mongoose = require('mongoose');
 var handle = require('../ErrorHandler/errorHandler');
 
 dotenv.load();
-module.exports = mongoose.createConnection(process.env.MONGODB_CONNECTION_URI, function(err) {
+var connection = mongoose.connect(process.env.MONGODB_CONNECTION_URI, function(err) {
 	if(err) return handle(err);
 	console.log('database connected');
 });
+
+mongoose.connection.on('error', function(err) {
+	console.log(err);
+});
+
+module.exports = connection;
 

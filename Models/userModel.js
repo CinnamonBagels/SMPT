@@ -17,6 +17,7 @@ var userSchema = new Schema({
 	public_key : String,
 	pending_invites : { type : Object, default : [] },
 	active_sessions : { type : Object, default : [] },
+	created_sessions : { type : Object, default : [] },
 	completed_sessions : { type : Object, default : [] }
 });
 

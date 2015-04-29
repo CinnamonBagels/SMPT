@@ -1,5 +1,5 @@
 module.exports.validateAuthentication = function (req, res, next) {
-	if(req.user !== null || req.user !== undefined) {
+	if(req.session.user !== null || req.session.user !== undefined) {
 		next();
 	} else {
 		res.redirect('/login');

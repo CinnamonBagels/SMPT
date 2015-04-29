@@ -6,12 +6,12 @@ keyPairGenerator = (function() {
 	function generateKeyPair(callback) {
 
 		if(typeof Worker !== 'undefined') {
-			worker = new Worker('./js/bundle.js');
+			worker = new Worker('./assets/js/bundle.js');
 
 			worker.onmessage = function(event) {
 				callback(event.data);
-				terminate();
-				return;
+				return terminate();
+				
 			}
 		} else {
 			//if they dont have keypair, manually execute.
@@ -19,7 +19,7 @@ keyPairGenerator = (function() {
 	}
 
 	function terminate() {
-		worker.terminate();
+		
 	}
 
 	return {

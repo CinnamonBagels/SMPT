@@ -2,8 +2,8 @@ var http = require('http');
 var fs = require('fs');
 var mongoose = require('mongoose');
 var express = require('express');
+var session = require('express-session');
 var bodyParser = require('body-parser');
-var handlebars = require('express3-handlebars');
 var path = require('path');
 var dotenv = require('dotenv');
 
@@ -30,11 +30,22 @@ var Session = require('./Models/sessionModel');
 
 var genotypes = require('./Data/genotypes');
 
-app.engine('handlebars', handlebars({defaultLayout : 'master'}));
-app.set('view engine', 'handlebars');
-app.set('views', __dirname + '/views');
+function genuid() {
+	var sha = crypto.createHash('sha256');
+	sha.update(Math.random().toString());
+	return sha.digest('hex');
+}
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
+app.use(session({
+	genid: function(req) {
+		return genuid()
+	},
+	secret: 'keyboard cat',
+	resave : false,
+	saveUninitialized : true
+}));
 
 app.use(bodyParser.urlencoded({ extended : true }));
 
@@ -56,29 +67,27 @@ var userRoutes = require('./Routes/users');
 var sessionRoutes = require('./Routes/sessions');
 var accountRoutes = require('./Routes/accounts');
 
-app.get('/', function(req, res) {
-	if(req.user) {
-		res.redirect('/account');
-	} else {
-		res.redirect('/login');
-	}
-});
-
-app.get('/register', userRoutes.getRegister);
-
 app.post('/register', userRoutes.postRegister);
-
-app.get('/login', userRoutes.getLogin);
 
 app.post('/login', userRoutes.postLogin);
 
-app.post('/logout')
+app.post('/logout', userRoutes.postLogout);
 
-app.get('/account', authentication.validateAuthentication, accountRoutes.viewAccount);
+app.post('/publickey', authentication.validateAuthentication, userRoutes.storePublicKey);
 
-app.get('/sessions', authentication.validateAuthentication, sessionRoutes.getSessions);
+app.get('/sessions/pendingInvites', authentication.validateAuthentication, sessionRoutes.getPendingInvites);
+app.get('/sessions/activeSessions', authentication.validateAuthentication, sessionRoutes.getActiveSessions);
+app.get('/sessions/createdSessions', authentication.validateAuthentication, sessionRoutes.getCreatedSessions);
 
-app.post('/sessions/createNewSession', authentication.validateAuthentication, sessionRoutes.createNewSession);
+app.post('/sessions/newSession', authentication.validateAuthentication, sessionRoutes.newSession);
+app.post('/sessions/newSession/invite', authentication.validateAuthentication, sessionRoutes.invite);
+
+
+
+app.get('*', function(req, res) {
+	//console.log(req.session.user);
+	res.sendFile(path.join(__dirname, '/public/index.html'));
+})
 
 
 app.listen(app.get('port'), function() {

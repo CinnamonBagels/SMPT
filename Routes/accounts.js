@@ -1,4 +1,3 @@
 
-module.exports.viewAccount = function(req, res) {
-	res.render('account');
+module.exports.getUserInfo = function(req, res) {
 }
