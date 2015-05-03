@@ -17,7 +17,7 @@
 				<div ng-repeat="invite in pendingInvites">
 					<div class="row">
 						<div class="columns large-12">
-							{{invite.title}}
+							<a href="/sessions/view/{{invite._id}}">{{invite.title}}</a>
 							<hr>
 							<p>{{invite.description}}</p>
 						</div>

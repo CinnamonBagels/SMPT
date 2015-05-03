@@ -3,19 +3,28 @@ angular.module('app')
 	$routeProvider
 		.when('/', {
 			templateUrl : 'app/components/User/login.html',
-			controller : 'LoginController'
+			controller : 'LoginController',
+			access : { requiredLogin : false }
 		})
 		.when('/sessions', {
 			templateUrl : 'app/components/Session/sessions.html',
-			controller : 'SessionController'
+			controller : 'SessionController',
+			access : { requiredLogin : true }
 		})
 		.when('/sessions/new', {
 			templateUrl : 'app/components/Session/newSession.html',
-			controller : 'SessionController'
+			controller : 'SessionController',
+			access : { requiredLogin : true }
+		})
+		.when('/sessions/view/:id', {
+			templateUrl : 'app/components/Session/viewSession.html',
+			controller : 'SessionViewController',
+			access : { requiredLogin : true }
 		})
 		.when('/home', {
 			templateUrl : 'app/components/Account/account.html',
-			controller : 'AccountController'
+			controller : 'AccountController',
+			access : { requiredLogin : true }
 		})
 		.otherwise({
 			redirectTo : '/'

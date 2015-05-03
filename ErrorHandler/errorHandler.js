@@ -1,3 +1,3 @@
-module.exports.handleError = function(err, route) {
+module.exports = function(err, route) {
 	console.log(err);
 }

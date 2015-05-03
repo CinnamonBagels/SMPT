@@ -9,6 +9,7 @@ var dotenv = require('dotenv');
 var expressjwt = require('express-jwt');
 var jwt = require('jsonwebtoken');
 
+var tokenAuth = expressjwt({ secret : 'keyboard cat', credentialsRequired : true });
 
 //errorhandler
 var handle = require('./ErrorHandler/errorHandler');
@@ -42,9 +43,6 @@ app.use(bodyParser.urlencoded({ extended : true }));
 var userRoutes = require('./User/userRoutes');
 var sessionRoutes = require('./Session/sessionRoutes');
 
-app.use('/home', expressjwt({ secret : 'keyboard cat', credentialsRequired : true }));
-app.use('/sessions', expressjwt({ secret : 'keyboard cat', credentialsRequired : true  }));
-
 app.use(function(err, req, res, next) {
 	console.log(err);
 	if(err.name === 'UnauthorizedError') return res.redirect('/');
@@ -56,13 +54,14 @@ app.post('/login', userRoutes.postLogin);
 
 app.post('/logout', userRoutes.postLogout);
 
-app.post('/account/publickey', userRoutes.storePublicKey);
+app.post('/account/publickey', tokenAuth, userRoutes.storePublicKey);
 
-app.get('/sessions/pendingInvites', sessionRoutes.getPendingInvites);
-app.get('/sessions/activeSessions', sessionRoutes.getActiveSessions);
-app.get('/sessions/createdSessions', sessionRoutes.getCreatedSessions);
-app.post('/sessions/newSession', sessionRoutes.newSession);
-app.post('/sessions/newSession/invite', sessionRoutes.invite);
+app.get('/sessions/pendingInvites', tokenAuth, sessionRoutes.getPendingInvites);
+app.get('/sessions/activeSessions', tokenAuth, sessionRoutes.getActiveSessions);
+app.get('/sessions/createdSessions', tokenAuth, sessionRoutes.getCreatedSessions);
+app.post('/sessions/newSession', tokenAuth, sessionRoutes.newSession);
+app.get('/sessions/getSession/:id', tokenAuth, sessionRoutes.getSessionById);
+app.post('/sessions/newSession/invite', tokenAuth, sessionRoutes.invite);
 
 app.get('*', function(req, res) {
 	res.sendFile(path.join(__dirname, '/public/index.html'));

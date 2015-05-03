@@ -37,7 +37,7 @@ module.exports.postLogin = function(req, res) {
 	var profile;
 	UserModel.findOne({ email : loginField.email }, function(err, user) {
 		if(err) return handle(err);
-		if(!user) return res.sendStatus(400);
+		if(!user) return res.sendStatus(401);
 
 		userCredentials.validateUser(loginField.password, user, function(valid) {
 			if(err) return handle(err);

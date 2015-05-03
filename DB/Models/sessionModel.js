@@ -22,7 +22,7 @@ var sessionModel = new Schema({
 	invited_participants : { type : Object, default : [] },
 	confirmed_participants : { type : Object, default : [] },
 	confirmed_participant_publickeys : { type : Object, default : [] },
-	status : { type : Number, default : 0 },
+	status : { type : Object, default : { code : 0, message : 'Not Ready' } },
 });
 
 sessionModel.plugin(autoIncrement.plugin, 'Session')

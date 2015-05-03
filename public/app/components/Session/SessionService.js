@@ -30,6 +30,10 @@ angular.module('app')
 			{
 				email : email
 			});
+		},
+
+		getSessionById : function(id) {
+			return $http.get('/sessions/getSession/' + id);
 		}
 	}
 }])

@@ -15,7 +15,8 @@ module.exports.newSession = function(req, res) {
 		title : sessionFields.title,
 		description : sessionFields.description,
 		random_data : randomData,
-		invited_participants : sessionFields.invited_participants
+		invited_participants : sessionFields.invited_participants,
+		created_by : req.user.email
 	},
 	function(err, session) {
 		if(err) return handle(err);
@@ -54,6 +55,7 @@ module.exports.getPendingInvites = function(req, res) {
 					temp.time_created = invite.time_created;
 					temp.title = invite.title;
 					temp.description = invite.description;
+					temp._id = invite._id;
 					return temp;
 				});
 				res.status(200);
@@ -102,5 +104,17 @@ module.exports.invite = function(req, res) {
 		} else {
 			res.sendStatus(400);
 		}
+	});
+}
+
+module.exports.getSessionById = function(req, res) {
+	console.log(req.params);
+	var id = req.params.id;
+	console.log('stuff ' + id);
+
+	SessionModel.findOne({ _id : id }, function(err, session) {
+		if(err) return handle(err);
+		if(session) return res.json(session);
+
 	});
 }

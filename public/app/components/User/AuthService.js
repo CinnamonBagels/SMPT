@@ -1,5 +1,6 @@
 angular.module('app')
-.factory('AuthService', ['$http', '$rootScope', '$window', 'Base64', function($http, $rootScope, $window, Base64) {
+.factory('AuthService', ['$http', '$window', function($http, $window) {
+
 	return {
 		login : function(email, password) {
 			return $http.post('/login', { email : email, password : password });
@@ -24,11 +25,7 @@ angular.module('app')
 		clearCredentials : function() {
       delete $window.sessionStorage.token;
 
-		},
-
-    isLoggedIn : function() {
-      //return $rootScope.globals !== {};
-    }
+		}
 	}
 }]);
 
