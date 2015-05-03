@@ -3,7 +3,7 @@ var mongoose = require('mongoose'),
 
 var findOrCreate = require('mongoose-findorcreate');
 var autoIncrement = require('mongoose-auto-increment');
-var db = require('./databaseConnection');
+var db = require('../databaseConnection');
 
 autoIncrement.initialize(db);
 
@@ -14,6 +14,7 @@ autoIncrement.initialize(db);
 //3 : done
 var sessionModel = new Schema({
 	time_created : { type : Date, default : Date.now },
+	created_by : String,
 	title : String,
 	description : String,
 	random_data : { type : Object, default : {} },

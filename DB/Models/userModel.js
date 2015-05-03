@@ -4,7 +4,7 @@ var mongoose = require('mongoose'),
 var findOrCreate = require('mongoose-findorcreate');
 
 var autoIncrement = require('mongoose-auto-increment');
-var db = require('./databaseConnection');
+var db = require('../databaseConnection');
 
 autoIncrement.initialize(db);
 
@@ -14,7 +14,7 @@ var userSchema = new Schema({
 	password : String,
 	salt : String,
 	region : String,
-	public_key : String,
+	public_key : {type : String, default : '' },
 	pending_invites : { type : Object, default : [] },
 	active_sessions : { type : Object, default : [] },
 	created_sessions : { type : Object, default : [] },

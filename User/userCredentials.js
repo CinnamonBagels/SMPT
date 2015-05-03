@@ -1,7 +1,7 @@
 var crypto = require('crypto');
 //errorhandler
 var handle = require('../ErrorHandler/errorHandler');
-var User = require('../Models/userModel.js');
+var User = require('../DB/Models/userModel');
 
 var SALT_BYTES = 256;
 var NO_ITERATIONS = 1;
@@ -38,30 +38,37 @@ function generateSalt() {
 }
 
 module.exports.createUserSession = function(user, req) {
-	req.session.user = req.session.user || {};
+	// req.session.user = req.session.user || {};
 	
-	req.session.user.logout = req.session.logout || 
-		function() {
-			delete req.session.user;
-		};
+	// req.session.user.logout = req.session.logout || 
+	// 	function() {
+	// 		delete req.session.user;
+	// 	};
 
 
-	req.session.user.email = user.email;
-	req.session.user.name = user.name;
-	req.session.user.region = user.region;
-	req.session.user.public_key = user.public_key || '';
+	// req.session.user.email = user.email;
+	// req.session.user.name = user.name;
+	// req.session.user.region = user.region;
+	// req.session.user.public_key = user.public_key || '';
 }
 
 
 module.exports.validateUser = function (password, user, callback) {
 	validateUserPassword(password, user.salt, function(err, hash) {
 		if(err) return handle(err);
-		if(user.password === hash) {
-			return callback(true);
-		} else {
-			return callback(false);
-		}
+		if(user.password === hash) return callback(true);
+		
+		return callback(false);
 	});
 };
+
+module.exports.ensureAuthenticated = function (req, res, next) {
+	if(req.user !== null || req.user !== undefined) {
+		next();
+	} else {
+		res.redirect('/login');
+	}
+}
+
 
 module.exports.generatePasswordHash = generatePasswordHash;

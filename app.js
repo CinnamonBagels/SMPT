@@ -6,6 +6,8 @@ var session = require('express-session');
 var bodyParser = require('body-parser');
 var path = require('path');
 var dotenv = require('dotenv');
+var expressjwt = require('express-jwt');
+var jwt = require('jsonwebtoken');
 
 
 //errorhandler
@@ -14,9 +16,7 @@ var handle = require('./ErrorHandler/errorHandler');
 //encryption
 var crypto = require('crypto');
 
-var socketConnection = require('./SocketHandler/connection');
-var userLogic = require('./User/user');
-var authentication = require('./User/authentication');
+var userCredentials = require('./User/userCredentials');
 
 var app = express();
 var server = http.createServer(app);
@@ -24,70 +24,49 @@ var io = require('socket.io')(server);
 
 //dotenv.load();
 
-var db = require('./Models/databaseConnection');
-var User = require('./Models/userModel');
-var Session = require('./Models/sessionModel');
+var db = require('./DB/databaseConnection');
+var User = require('./DB/Models/userModel');
+var Session = require('./DB/Models/sessionModel');
 
 var genotypes = require('./Data/genotypes');
-
-function genuid() {
-	var sha = crypto.createHash('sha256');
-	sha.update(Math.random().toString());
-	return sha.digest('hex');
-}
-
-app.use(express.static(path.join(__dirname, 'public')));
-app.use(bodyParser.json());
-app.use(session({
-	genid: function(req) {
-		return genuid()
-	},
-	secret: 'keyboard cat',
-	resave : false,
-	saveUninitialized : true
-}));
-
-app.use(bodyParser.urlencoded({ extended : true }));
 
 app.set('port', process.env.PORT || 3000);
 
 
-function response(fields) {
-	var responseFields = fields || {};
-	var responseObject = {};
-	responseObject.success = responseFields.success;
-	reponseObject.message = responseFields.message;
-	respobseObject.err = responseFields.err;
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(bodyParser.json());
 
-	return responseObject;
-}
+app.use(bodyParser.urlencoded({ extended : true }));
 
 //routes
-var userRoutes = require('./Routes/users');
-var sessionRoutes = require('./Routes/sessions');
-var accountRoutes = require('./Routes/accounts');
+var userRoutes = require('./User/userRoutes');
+var sessionRoutes = require('./Session/sessionRoutes');
 
+app.use('/home', expressjwt({ secret : 'keyboard cat', credentialsRequired : true }));
+app.use('/sessions', expressjwt({ secret : 'keyboard cat', credentialsRequired : true  }));
+
+app.use(function(err, req, res, next) {
+	console.log(err);
+	if(err.name === 'UnauthorizedError') return res.redirect('/');
+	next();
+});
 app.post('/register', userRoutes.postRegister);
 
 app.post('/login', userRoutes.postLogin);
 
 app.post('/logout', userRoutes.postLogout);
 
-app.post('/publickey', authentication.validateAuthentication, userRoutes.storePublicKey);
+app.post('/account/publickey', userRoutes.storePublicKey);
 
-app.get('/sessions/pendingInvites', authentication.validateAuthentication, sessionRoutes.getPendingInvites);
-app.get('/sessions/activeSessions', authentication.validateAuthentication, sessionRoutes.getActiveSessions);
-app.get('/sessions/createdSessions', authentication.validateAuthentication, sessionRoutes.getCreatedSessions);
-
-app.post('/sessions/newSession', authentication.validateAuthentication, sessionRoutes.newSession);
-app.post('/sessions/newSession/invite', authentication.validateAuthentication, sessionRoutes.invite);
-
-
+app.get('/sessions/pendingInvites', sessionRoutes.getPendingInvites);
+app.get('/sessions/activeSessions', sessionRoutes.getActiveSessions);
+app.get('/sessions/createdSessions', sessionRoutes.getCreatedSessions);
+app.post('/sessions/newSession', sessionRoutes.newSession);
+app.post('/sessions/newSession/invite', sessionRoutes.invite);
 
 app.get('*', function(req, res) {
-	//console.log(req.session.user);
 	res.sendFile(path.join(__dirname, '/public/index.html'));
-})
+});
 
 
 app.listen(app.get('port'), function() {

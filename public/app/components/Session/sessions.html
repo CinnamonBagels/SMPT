@@ -1,9 +1,29 @@
 <div class="row" ng-controller="SessionController">
-	<div class="columns large-4 text-center">Active Sessions</div>
 	<div class="columns large-4 text-center">
 		<div class="row">
+			<div class="columns large-12">
+				Active Sessions
+			</div>
+		</div>
+	</div>
+	<div class="columns large-4 text-center">
+		<div class="row">
+			<div class="columns large-12">
+				Pending Invites
+			</div>
+		</div>
+		<div class="row">
 			<div class="columns large-12 text-center">
-				
+				<div ng-repeat="invite in pendingInvites">
+					<div class="row">
+						<div class="columns large-12">
+							{{invite.title}}
+							<hr>
+							<p>{{invite.description}}</p>
+						</div>
+					</div>
+				</div>
+				<a href="/sessions/new">Create a new session</a>
 			</div>
 		</div>
 	</div>
