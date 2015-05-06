@@ -1,5 +1,5 @@
 angular.module('app')
-.controller('IndexController', ['$scope', '$rootScope', 'AuthService', function($scope, $rootScope, AuthService) {
+.controller('IndexController', ['$window', '$scope', '$rootScope', 'AuthService', function($window, $scope, $rootScope, AuthService) {
 	$scope.logout = function() {
 		AuthService.logout().success(function(data, status) {
 			console.log(data, status);
@@ -9,7 +9,6 @@ angular.module('app')
 
 		});
 	}
-
 	$scope.isLoggedIn = function() {
 		return AuthService.isLoggedIn();
 	}

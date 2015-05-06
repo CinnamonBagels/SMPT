@@ -13,15 +13,12 @@ angular.module('app')
 			return $http.get('/sessions/createdSessions');
 		},
 
-		getSession : function(sessionID) {
-			return $http.get('/sessions/' + sessionId);
-		},
-
-		newSession : function(title, description, invitedParticipants) {
+		newSession : function(session, includeSelf) {
 			return $http.post('/sessions/newSession', 
-				{ title : title, 
-				  description : description,
-				  invited_participants : invitedParticipants 
+				{ title : session.title, 
+				  description : session.description,
+				  invited_participants : session.emails,
+				  includeSelf : includeSelf
 				});
 		},
 
@@ -33,7 +30,30 @@ angular.module('app')
 		},
 
 		getSessionById : function(id) {
-			return $http.get('/sessions/getSession/' + id);
+			return $http.get('/sessions/get/' + id);
+		},
+
+		acceptInvite : function(id) {
+			return $http.post('/sessions/' + id + '/accept');
+		},
+
+		startSession : function(id) {
+			return $http.post('/sessions/' + id + '/start')
+		},
+
+		sendInvite : function(email, id) {
+			return $http.post('/sessions/' + id + '/sendInvite', {
+				email : email
+			})
+		},
+
+		submitData : function(data, id) {
+			return $http.post('/sessions/' + id + '/submitData', {
+				data : data
+			});
+		}
+		getNextPublicKey : function(id) {
+			return $http.get('/sessions/' + id + '/getPublicKey');
 		}
 	}
 }])

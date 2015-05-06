@@ -20,9 +20,14 @@ var sessionModel = new Schema({
 	random_data : { type : Object, default : {} },
 	aggregate_data : { type : Object, default : {} },
 	invited_participants : { type : Object, default : [] },
-	confirmed_participants : { type : Object, default : [] },
-	confirmed_participant_publickeys : { type : Object, default : [] },
+	pending_invited_participants : { type : Object, default : [] },
+	confirmed_invited_participants : { type : Object, default : [] },
+	pending_data_participants : { type : Object, default : [] },
+	completed_data_participants : { type : Object, default : [] },
 	status : { type : Object, default : { code : 0, message : 'Not Ready' } },
+	current_user : String,
+	next_user : String,
+	current_data : String
 });
 
 sessionModel.plugin(autoIncrement.plugin, 'Session')

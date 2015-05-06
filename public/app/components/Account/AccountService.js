@@ -29,10 +29,11 @@ angular.module('app')
 	}
 
 	return {
-		createKeypair : function() {
+		createKeypair : function(callback) {
 			if(typeof localStorage !== 'undefined') {
 				generateKeyPair(function(keypair) {
 					localStorage.setItem('private_key', keypair.private);
+					callback();
 					sendKey(keypair.public);
 				});
 			} else {

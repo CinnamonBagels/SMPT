@@ -8,23 +8,24 @@ angular.module('app')
 		logout : function() {
 			return $http.post('/logout');
 		},
-		register : function(name, email, password, region) {
+		register : function(user) {
 			return $http.post('/register',
 			{ 
-				name : name,
-				email : email,
-			  	password : password,
-			  	region : region 
+				name : user.name,
+				email : user.email,
+		  	password : user.password,
+		  	region : user.region 
 			});
 		},
 
-		setCredentials : function(token) {
+		setCredentials : function(email, token) {
+      $window.sessionStorage.email = email;
       $window.sessionStorage.token = token;
 		},
 
 		clearCredentials : function() {
       delete $window.sessionStorage.token;
-
+      delete $window.sessionStorage.email;
 		}
 	}
 }]);

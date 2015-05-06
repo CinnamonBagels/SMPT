@@ -1,10 +1,11 @@
 angular.module('app')
 .controller('LoginController', ['$scope', 'AuthService', '$rootScope', '$location', function($scope, AuthService, $rootScope, $location) {
-
-	$scope.login = function(email, password) {
-		AuthService.login(email, password).success(function(data, status) {
+	$scope.user = {};
+	$scope.newUser = {};
+	$scope.login = function(user) {
+		AuthService.login(user.email, user.password).success(function(data, status) {
 			console.log(data, status);
-			AuthService.setCredentials(data.token);
+			AuthService.setCredentials(user.email, data.token);
 			$location.path('/home');
 		})
 		.error(function(data, status) {
@@ -12,10 +13,10 @@ angular.module('app')
 			$location.path('/login');
 		});
 	}
-	$scope.register = function(name, email, password, region) {
-		AuthService.register(name, email, password, region).success(function(data, status) {
+	$scope.register = function(user) {
+		AuthService.register(user).success(function(data, status) {
 			console.log(data, status);
-			AuthService.setCredentials(email, password);
+			AuthService.setCredentials(user.email, data.token);
 			$location.path('/home');
 		})
 		.error(function(data, status) {

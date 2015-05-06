@@ -18,7 +18,7 @@ angular.module('app')
 
 		response : function(response) {
 			//console.log(response);
-			if(response != null && response.status === 200 && $window.sessionStorage.token && !UserService.isLoggedIn)
+			if(response != null && response.status === 200 && $window.sessionStorage.token)
 				UserService.isLoggedIn = true;
 
 
@@ -30,7 +30,7 @@ angular.module('app')
 			if (rejection != null && rejection.status === 401 && ($window.sessionStorage.token || UserService.isLoggedIn)) {
 	            delete $window.sessionStorage.token;
 	            UserService.isLoggedIn = false;
-	            return $location.path("/");
+	            return $location.path("/login");
 	        }
 			return $q.reject(rejection);
 		}

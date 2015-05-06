@@ -60,7 +60,13 @@ app.get('/sessions/pendingInvites', tokenAuth, sessionRoutes.getPendingInvites);
 app.get('/sessions/activeSessions', tokenAuth, sessionRoutes.getActiveSessions);
 app.get('/sessions/createdSessions', tokenAuth, sessionRoutes.getCreatedSessions);
 app.post('/sessions/newSession', tokenAuth, sessionRoutes.newSession);
-app.get('/sessions/getSession/:id', tokenAuth, sessionRoutes.getSessionById);
+app.get('/sessions/get/:id', tokenAuth, sessionRoutes.getSessionById);
+app.post('/sessions/:id/accept', tokenAuth, sessionRoutes.acceptInvite);
+app.post('/sessions/:id/sendInvite', tokenAuth, sessionRoutes.sendInvite);
+app.post('/sessions/:id/reject', tokenAuth, sessionRoutes.rejectInvite);
+app.post('/sessions/:id/start', tokenAuth, sessionRoutes.startSession);
+app.post('/sessions/:id/submitData', tokenAuth, sessionRoutes.submitData);
+app.get('/sessions/:id/getPublicKey', tokenAuth, sessionRoutes.getPublicKey);
 app.post('/sessions/newSession/invite', tokenAuth, sessionRoutes.invite);
 
 app.get('*', function(req, res) {

@@ -6,6 +6,8 @@ var jwt = require('jsonwebtoken');
 
 module.exports.postRegister = function(req, res) {
 	var registerField = req.body;
+	var token;
+	var profile;
 	console.log(registerField);
 
 	UserModel.findOrCreate({
@@ -21,9 +23,20 @@ module.exports.postRegister = function(req, res) {
 				user.password = hash;
 				user.salt = salt;
 				user.region = registerField.region;
-				user.save();
+				user.save(function(err) {
+					if(err) return handle(err);
 
-				res.sendStatus(200);
+					profile = {
+						name : user.name,
+						email : user.email,
+						id : user._id
+					};
+
+					token = jwt.sign(profile, 'keyboard cat');
+					res.status(200);
+					res.json({ token : token });
+				});
+
 			});
 		} else {
 			res.sendStatus(400);
@@ -81,8 +94,4 @@ module.exports.storePublicKey = function(req, res) {
 			res.sendStatus(400);
 		}
 	});
-}
-
-module.exports.acceptInvite = function(req, res) {
-	
 }

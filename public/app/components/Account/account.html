@@ -1,6 +1,10 @@
 <script src="./assets/js/generateKP.js"></script>
-<a id="generate_keypair_button" ng-click="createKeypair()">Generate New Keypair</a>
-<a href="/sessions">Go to my sessions</a>
-<div id="keypair_status">
+<div class="row">
+	<div class="columns large-12 text-center">
+		<a class="button primary" id="generate_keypair_button" ng-click="createKeypair()">Generate New Keypair</a>
+		<a class="button success" href="/sessions">Go to my sessions</a>
+	</div>
+</div>
+<div id="keypair_status" ng-model="keypair.keypair_status">
 	
 </div>

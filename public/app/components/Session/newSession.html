@@ -1,38 +1,54 @@
 <div class="row">
-	<div class="columns large-12">	
-		<form>
-		<div class="row">
-			<div class="columns large-12">
-				<input type="text" ng-model="title" Placeholder="Session Title">
-			</div>
-		</div>
-		<div class="row">
-			<div class="columns large-12">
-				<textarea ng-model="description" Placeholder="Description"></textarea>
-			</div>
-		</div>
-		<div class="row">
+	<div class="columns large-8">	
+		<form ng-submit="newSession(session)">
 			<div class="row">
-				<div class="columns large-8">
-					<input type="text" ng-model="email" Placeholder="Invite by email">
-				</div>
-				<div class="columns large-4">
-					<a class="button success" ng-click="inviteByEmail(email)">Invite</a>
+				<div class="columns large-12">
+					<input type="text" ng-model="session.title" Placeholder="Session Title" required>
 				</div>
 			</div>
-			<div class="row" ng-repeat="email in emails">
-				<div class="row">
-					<div class="columns large-12 text-center">
-						{{email}}
-					</div>
+			<div class="row">
+				<div class="columns large-12">
+					<textarea ng-model="session.description" Placeholder="Description" required></textarea>
 				</div>
 			</div>
-		</div>
+			<div class="row">
+				<div class="columns large-12">
+					<input id="includeSelf" type="checkbox" ng-model="checkbox.includeSelf" checked><label for="includeSelf">Include Self?</label>
+				</div>
+			</div>
+			<div class="row">
+				<div class="columns large-12">
+					<a class="button button-success expand" ng-click="newSession(session)">Create New Session</a>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="columns large-4">
 		<div class="row">
 			<div class="columns large-12">
-				<a class="button button-success" ng-click="newSession(title, description)">Create New Session</a>
+					<form ng-submit="inviteByEmail(email)">
+						<div class="row collapse">
+							<div class="columns large-8">
+								<input type="text" ng-model="email" Placeholder="Invite by email">
+							</div>
+							<div class="columns large-4">
+								<a class="button success postfix" ng-click="inviteByEmail(email)">Invite</a>
+							</div>
+						</div>
+					</form>
+			</div>
+			<div class="row">
+				<div class="columns large-12 text-center">
+					<fieldset>
+						<legend>Invited E-mails</legend>
+						<div class="row" ng-repeat="email in emails">
+							<div class="columns large-12">
+								{{email}}
+							</div>
+						</div>
+					</fieldset>
+				</div>
 			</div>
 		</div>
-		</form>
 	</div>
 </div>

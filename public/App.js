@@ -1,13 +1,14 @@
-angular.module('app', ['ngRoute', 'ngCookies'])
-.run(['$rootScope', '$location', 'UserService', function($rootScope, $location, UserService) {
+angular.module('app', ['ngRoute', 'ngCookies', 'mm.foundation', 'mm.foundation.tpls'])
+.run(['$rootScope', '$location', '$window', 'UserService', function($rootScope, $location, $window, UserService) {
 	$rootScope.$on('$routeChangeStart', function(event, nextRoute, currentRoute) {
-		console.log(nextRoute);
-		if(!nextRoute) {
-			$location.path('/');
+		if($window.sessionStorage.token && $window.sessionStorage.email) {
+			UserService.isLoggedIn = true;
+			if($location.url() === '/login') return $location.path('/home');
 		}
-		if(nextRoute && nextRoute.access.requiredLogin && !UserService.isLoggedIn) {
+
+		if(nextRoute.$$route.access && nextRoute.$$route.access.requiredLogin && !UserService.isLoggedIn) {
 			event.preventDefault();
-			$location.path('/');
+			return $location.path('/login');
 		}
 	})
 }]);

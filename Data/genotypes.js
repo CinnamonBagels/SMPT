@@ -22,8 +22,8 @@ module.exports.data = data;
 module.exports.generateRandomData = function() {
 	var i;
 	var randomData = {
-		case : {},
-		control : {}
+		case : [],
+		control : []
 	};
 
 	data.forEach(function(genotype) {

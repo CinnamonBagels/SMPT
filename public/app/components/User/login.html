@@ -1,24 +1,42 @@
-<form name="register_form">
-	<label for="register_name">Name</label>
-	<input type="text" id="register_name" ng-model="name" placeholder="John Doe">
-	<label for="register_email">Email</label>
-	<input id="register_email" ng-model="register_email" class="email" type="text" placeholder="johndoe@gmail.com">
-	<label for="register_region">Region</label>
-	<input type="text" id="register_region"  ng-model="region" placeholder="eg. San Diego">
-	<label for="register_password">Password</label>
-	<input type="password" id="register_password" ng-model="register_password" placeholder="Password">
-	<label for="register_password_confirm">Confirm Password</label>
-	<input type="password" id="register_password_confirm" ng-model="register_password_confirm" placeholder="Confirm Password">
-	<a ng-click="register(name, register_email, register_password, region)">Submit</a>
-</form>
+<div class="row">
+	<div class="columns large-12 text-center">
+		<span class="title">Login</span>
+	</div>
+</div>
+<div class="row">
+	<div class="columns large-12">
+		<form name="login_form" ng-submit="login(user)">
+			<label for="login_email">Email</label>
+			<input type="text" id="login_email" ng-model="user.email" placeholder="Email" required>
+			<label for="login_password">Password</label>
+			<input type="password" id="login_password" enter="login(user)" ng-model="user.password" placeholder="Password" required>
+			<a class="button success expand" ng-click="login(user)">Submit</a>
+		</form>
+	</div>
+</div>
 
-<form name="login_form">
-	<label for="login_email">Email</label>
-	<input type="text" id="login_email" ng-model="login_email" placeholder="Email">
-	<label for="login_password">Password</label>
-	<input type="password" id="login_password" ng-model="login_password" placeholder="Password">
-	<a ng-click="login(login_email, login_password)">Submit</a>
-</form>
+<div class="row">
+	<div class="columns large-12 text-center">
+		<span class="title">Register</span>
+	</div>
+</div>
+<div class="row">
+	<div class="columns large-12">
+		<form name="register_form" ng-submit="register(newUser)">
+			<label for="register_name">Name</label>
+			<input type="text" id="register_name" ng-model="newUser.name" placeholder="John Doe" required>
+			<label for="register_email">Email</label>
+			<input id="register_email" ng-model="newUser.email" class="email" type="text" placeholder="johndoe@gmail.com" required>
+			<label for="register_region">Region</label>
+			<input type="text" id="register_region"  ng-model="newUser.region" placeholder="eg. San Diego" required>
+			<label for="register_password">Password</label>
+			<input type="password" id="register_password" ng-model="newUser.password" placeholder="Password" required>
+			<label for="register_password_confirm">Confirm Password</label>
+			<input type="password" enter="register(newUser)" id="register_password_confirm" ng-model="newUser.confirmPassword" placeholder="Confirm Password" required>
+			<a class="button info expand" ng-click="register(newUser)">Submit</a>
+		</form>
+	</div>
+</div>
 
 <script>
 	var password = document.getElementById('register_password'),

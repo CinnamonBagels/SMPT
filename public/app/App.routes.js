@@ -2,6 +2,11 @@ angular.module('app')
 .config(['$routeProvider', '$locationProvider', '$httpProvider', function($routeProvider, $locationProvider, $httpProvider) {
 	$routeProvider
 		.when('/', {
+			templateUrl : 'app/components/Main/main.html',
+			controller : 'IndexController',
+			access : { requiredLogin : false }
+		})
+		.when('/login', {
 			templateUrl : 'app/components/User/login.html',
 			controller : 'LoginController',
 			access : { requiredLogin : false }
