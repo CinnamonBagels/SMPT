@@ -51,7 +51,8 @@ angular.module('app')
 			return $http.post('/sessions/' + id + '/submitData', {
 				data : data
 			});
-		}
+		},
+		
 		getNextPublicKey : function(id) {
 			return $http.get('/sessions/' + id + '/getPublicKey');
 		}

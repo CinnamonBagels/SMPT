@@ -27,11 +27,11 @@ module.exports.generateRandomData = function() {
 	};
 
 	data.forEach(function(genotype) {
-		randomData.case[genotype] = Math.floor(Math.random() * 1000000) * 34;
+		randomData.case.push(Math.floor(Math.random() * 1000000) * 34);
 	});
 
 	data.forEach(function(genotype) {
-		randomData.control[genotype] = Math.floor(Math.random() * 1000000) * 34;
+		randomData.control.push(Math.floor(Math.random() * 1000000) * 34);
 	});
 
 	return randomData;

@@ -26,6 +26,8 @@ angular.module('app')
 		}
 		$scope.session = data;
 		$scope.status[data.status.code] = true;
+		console.log($scope.status);
+		console.log($window.sessionStorage.email, data.current_user);
 		$scope.isNextUser = $window.sessionStorage.email === data.current_user;
 		$scope.current_data = data.current_data;
 		console.log($scope.session);
@@ -62,7 +64,10 @@ angular.module('app')
 		var submittedData = data.split('\n');
 		var sections;
 		var decryptedData;
-		var combinedData;
+		var combinedData = {};
+		var caseData;
+		var controlData;
+		var i;
 		if(typeof Worker !== 'undefined') {
 			worker = new Worker('./vendor/nodersabuffer.js');
 			worker.onmessage = function(event) {
@@ -70,27 +75,42 @@ angular.module('app')
 
 				//will be sent encrypted, data
 				if(sections[0] === 'encrypted') {
-					SessionService.submitData(sections[1]).success(function(data, status) {
-						
+					SessionService.submitData(sections[1], id).success(function(data, status) {
+						console.log(status, 'Submitted data');
+						worker.terminate();
 					});
 				} 
 
 				//worker sends decrypted, json data via string format
 				if(sections[0] === 'decrypted') {
+					console.log('works fine');
 					decryptedData = JSON.parse(sections[1]);
-					console.log(decryptedData);
+					console.log('works fine');
+					//console.log(decryptedData);
+					i = 0;
+					caseData = decryptedData.case.map(function(element) {
+						console.log(element + submittedData[i], submittedData[i], element);
+						return Number(element) + Number(submittedData[i++]);
+					});
 
+					controlData = decryptedData.control.map(function(element) {
+						return Number(element) + Number(submittedData[i++]);
+					});
+
+					combinedData.case = caseData;
+					combinedData.control = controlData;
 					/*
 					HERE we have to combine the data.
 					 */
-					
+					console.log(combinedData);
 					//now we encrypt with the public key of next person
 					SessionService.getNextPublicKey(id).success(function(data, status) {
+						console.log('got public key: ', data);
 						worker.postMessage(['encrypt',
 							'ENDSECTION',
-							combinedData,
+							JSON.stringify(combinedData),
 							'ENDSECTION',
-							data.public_key
+							data
 						].join(' '));
 					})
 				}
@@ -100,7 +120,7 @@ angular.module('app')
 				'ENDSECTION', 
 				$scope.current_data, 
 				'ENDSECTION', 
-				localStorage.get('private_key')
+				localStorage.getItem($window.sessionStorage.email + '_private_key')
 			].join(' '));
 		}
 	}

@@ -32,7 +32,7 @@ angular.module('app')
 		createKeypair : function(callback) {
 			if(typeof localStorage !== 'undefined') {
 				generateKeyPair(function(keypair) {
-					localStorage.setItem('private_key', keypair.private);
+					localStorage.setItem($window.sessionStorage.email + '_private_key', keypair.private);
 					callback();
 					sendKey(keypair.public);
 				});

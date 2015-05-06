@@ -12,14 +12,17 @@ onmessage = function(e) {
   THIS WILL DECRYPT THE DATA AND PASS IT BACK AS A STRING
    */
   if(sections[0] === 'decrypt') {
+    console.log('decrypting with secret key');
     //sections2 is the key
-    key = new NodeRSA(sections[2]);
+    key = new nodeRSA(sections[2], { environment : 'browser' });
     returnData = key.decrypt(sections[1]);
-    console.log(buffer.toString(returnData));
+    console.log(returnData.toJSON());
+    console.log(returnData.toString());
     postMessage(['decrypted',
       'ENDSECTION',
-      buffer.toString(returnData)
-      ].join(' '))
+      returnData.toString()
+      ].join(' '));
+    delete key;
   }
 
   //will be sent encrypt, data, publickey
@@ -27,13 +30,14 @@ onmessage = function(e) {
     THIS WILL ENCRYPT THE STRING DATA AND PASS BACK THE ENCRYPT STRING
    */
   if(sections[0] === 'encrypt') {
-    key = new NodeRSA(sections[2]);
+    key = new nodeRSA(sections[2], { environment : 'browser' });
     returnData = key.encrypt(sections[1], 'base64');
     console.log(returnData);
     postMessage(['encrypted',
       'ENDSECTION',
       returnData
       ].join(' '));
+    delete key;
   }
 }
 },{"buffer":26,"node-rsa":9}],2:[function(require,module,exports){
@@ -15578,12 +15582,8 @@ module.exports.linebrk = function (str, maxLen) {
 };
 
 module.exports.detectEnvironment = function () {
-    if (process && process.title != 'browser') {
-        return 'node';
-    } else if (window) {
-        return 'browser';
-    }
-    return 'node';
+
+    return 'browser';
 };
 
 /**
