@@ -6,6 +6,11 @@ angular.module('app')
 	var encrypt;
 	var decrypt;
 	$scope.session = {};
+	$scope.subnav = {
+		description : true,
+		instructions : false,
+		participants : false
+	}
 	$scope.status = {};
 	SessionService.getSessionById(id).success(function(data, status)  {
 		if(data.created_by === $window.sessionStorage.email) {
@@ -25,6 +30,8 @@ angular.module('app')
 			});
 		}
 		$scope.session = data;
+		$scope.instructions = data.instructions;
+		$scope.participants = data.invited_participants;
 		$scope.status[data.status.code] = true;
 		console.log($scope.status);
 		console.log($window.sessionStorage.email, data.current_user);
@@ -35,6 +42,20 @@ angular.module('app')
 		console.log(data, status)
 	});
 
+	$scope.showDescription = function() {
+		$scope.subnav.instructions = $scope.subnav.participants = false;
+		$scope.subnav.description = true;
+	}
+
+	$scope.showInstructions = function() {
+		$scope.subnav.description = $scope.subnav.participants = false;
+		$scope.subnav.instructions = true;
+	}
+
+	$scope.showParticipants = function() {
+		$scope.subnav.instructions = $scope.subnav.description = false;
+		$scope.subnav.participants = true;
+	}
 	$scope.acceptInvite = function() {
 		SessionService.acceptInvite(id).success(function(data, status) {
 			console.log('accepted invite');
@@ -62,66 +83,25 @@ angular.module('app')
 
 	$scope.submitData = function(data) {
 		var submittedData = data.split('\n');
-		var sections;
 		var decryptedData;
-		var combinedData = {};
-		var caseData;
-		var controlData;
-		var i;
 		if(typeof Worker !== 'undefined') {
 			worker = new Worker('./vendor/nodersabuffer.js');
+
 			worker.onmessage = function(event) {
-				sections = event.data.split(' ENDSECTION ');
-
-				//will be sent encrypted, data
-				if(sections[0] === 'encrypted') {
-					SessionService.submitData(sections[1], id).success(function(data, status) {
-						console.log(status, 'Submitted data');
-						worker.terminate();
-					});
-				} 
-
-				//worker sends decrypted, json data via string format
-				if(sections[0] === 'decrypted') {
-					console.log('works fine');
-					decryptedData = JSON.parse(sections[1]);
-					console.log('works fine');
-					//console.log(decryptedData);
-					i = 0;
-					caseData = decryptedData.case.map(function(element) {
-						console.log(element + submittedData[i], submittedData[i], element);
-						return Number(element) + Number(submittedData[i++]);
-					});
-
-					controlData = decryptedData.control.map(function(element) {
-						return Number(element) + Number(submittedData[i++]);
-					});
-
-					combinedData.case = caseData;
-					combinedData.control = controlData;
-					/*
-					HERE we have to combine the data.
-					 */
-					console.log(combinedData);
-					//now we encrypt with the public key of next person
-					SessionService.getNextPublicKey(id).success(function(data, status) {
-						console.log('got public key: ', data);
-						worker.postMessage(['encrypt',
-							'ENDSECTION',
-							JSON.stringify(combinedData),
-							'ENDSECTION',
-							data
-						].join(' '));
-					})
-				}
+				SessionService.submitData(event.data, id).success(function(data, status) {
+					console.log(status, 'Submitted data');
+					worker.terminate();
+				});
 			}
-			worker.postMessage([
-				'decrypt', 
-				'ENDSECTION', 
-				$scope.current_data, 
-				'ENDSECTION', 
-				localStorage.getItem($window.sessionStorage.email + '_private_key')
-			].join(' '));
+			SessionService.getNextPublicKey(id).success(function(data, status) {
+				worker.postMessage({
+					submitData : true,
+					public : data,
+					secret : localStorage.getItem($window.sessionStorage.email + '_private_key'),
+					current_data : $scope.current_data,
+					submitted_data : submittedData
+				});
+			});
 		}
 	}
 }]);

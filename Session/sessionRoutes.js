@@ -1,46 +1,10 @@
+'use strict';
 //errorhandler
 var handle = require('../ErrorHandler/errorHandler');
 var UserModel = require('../DB/Models/userModel');
 var nodersa = require('node-rsa');
 var SessionModel = require('../DB/Models/sessionModel');
-var genotypes = require('../Data/genotypes');
 var async = require('async');
-var server_public = 
-'-----BEGIN RSA PUBLIC KEY-----\n' +
-'MIIBCgKCAQEAgKInUXjWjqLC05cyEvZfZG77SDq54+Xb+XItypAl+iWS03+BAoP5P8UteLug\n' + 
-'U9I8IaKdEICp1yQRpowKg3XRpdbpPJGFSc2qBbH3biAXC4KCxu7O8O9+9uWkXhGT3fREN6L+\n' + 
-'T6ljbrwkasCxC5m14OA32JfivFjyncs6ueFNCnHc87/vri1IUQeI0NgNptkG3DLqOB/ajBKX\n' + 
-'6kUYrcZQbQxlgPme3MTPOyVos05nnd6q/+y6VaLcEBvlIdj/DdLdJzBW+oUPbRxt/wMit4zb\n' + 
-'4fr1y3H2oTJyluqxuG8qRB/+K9+ht2rPDPpC5ZA/fXBWdvkEHYkpvCHR0aDeQPsHCQIDAQAB\n' +
-'-----END RSA PUBLIC KEY-----\n';
-var server_private = 
-'-----BEGIN RSA PRIVATE KEY-----\n' + 
-'MIIEpAIBAAKCAQEAgKInUXjWjqLC05cyEvZfZG77SDq54+Xb+XItypAl+iWS03+BAoP5P8Ut\n' + 
-'eLugU9I8IaKdEICp1yQRpowKg3XRpdbpPJGFSc2qBbH3biAXC4KCxu7O8O9+9uWkXhGT3fRE\n' + 
-'N6L+T6ljbrwkasCxC5m14OA32JfivFjyncs6ueFNCnHc87/vri1IUQeI0NgNptkG3DLqOB/a\n' +
-'jBKX6kUYrcZQbQxlgPme3MTPOyVos05nnd6q/+y6VaLcEBvlIdj/DdLdJzBW+oUPbRxt/wMi\n' + 
-'t4zb4fr1y3H2oTJyluqxuG8qRB/+K9+ht2rPDPpC5ZA/fXBWdvkEHYkpvCHR0aDeQPsHCQID\n' +
-'AQABAoIBAQANPqUFwod1EFU3LC4/vZZ85OCCw2k4igZoXNVSMh128D95/3rtI2Gaq1bPQ6Jy\n' +
-'fwcp/3BkrprOSCx5FZpPhuYbSVGipukufDqxc22irTMyQDHvAc/VBxPvoB2Ygf7Tr78Ga4X7\n' +
-'9dkDIeQuCcExDJapnOyjJKB3/ECe9roJQaWJGaGZ2xXK1hvW/SMFCLPX8pQhyXYEWdXls5d1\n' +
-'vpGzwJaxldyor3tuDdmRDCubw5bI58+a2VM4EyiKFH2Tm/nvbLJNdcWTQIR1lgUSmf5D+nCW\n' +
-'+G5YdfHgGQDB6dbaGVnjQUDdWuhErzppzTbtxGX/Q2ue0uRyCeqXbM27BqgCfEsxAoGBAOvM\n' +
-'FAYr1dm7sFlm526vDAzGvomLhhMK7vrQNmYGTETYRkarzXuX55LuTPwByapVsBVxzA6UgCGF\n' +
-'dLlKEEQVT4+viK1GdsAfryEGPa7Z7Vn814kGX5bS4ZJQksYQp5R7nJqjjeHIDX4dEOu852h0\n' +
-'LStYywNeYyyBLkJwjGCkXA8XAoGBAIunkdMhEwsldvnqe0k0j10pbMwx/k2q9xt1Lm8wkhSa\n' +
-'hO9j9moTzQNI1YQ3iwQhPF+8OVPWvtrRLVSB/Li3ncsIknRmla43ogIi11N37LnWOnDVTEDs\n' +
-'Z5seVcRa1dmXh+/NEfQm7HMKoiSDbkYhCHvqL7Mq87yI0kiE4Mfs4m7fAoGBAK0rCSGnG7x1\n' +
-'zIM7wYdV4uGXK+NTpjlh9DQaqXiv818z/hh0n8m+u4D6pWsF3RbNKy30jsm+YYM8wYY6UEvP\n' +
-'4shBP30RnLBoFHOKY85/mYJW3+tv1M+tO5/6sG/pV0kCpvYiW1aPVulha0XVS5U4jNuisCVf\n' +
-'MjJDBLgic9Wdn0YtAoGANifHDr52qg3fM07QfDTbm17jB9QjL28q4ATy+r81BrRc9JApED2Z\n' +
-'dLqbwefgCrvws5dEC9TsseIH2AuIOwFJOWCbmnPle2erdXSZV47bx7zhcLvmFA8Ypjh/PeOT\n' +
-'pgty9XTqj2lAq+PluI8XBi7tIVBRKwNu/R95nBGbMSwVKrUCgYBuoRwfMP2cWLF2/1HMUWYB\n' +
-'04MIsrN5oSnFADO4ko9tgBg2wV9tirvF/pTHGEF3hzuHtIYdW4urT5x4l9fhv98cryoLQmMx\n' +
-'wWsggCwDd7SXUuzIzYhIwdxVgAwpcuxzD5nOGqCkm2d/1LLDIUdpwzEfCSFMftaGn8CqPANL\n' +
-'VXpiRg==\n-----END RSA PRIVATE KEY-----\n';
-
-var publicKey = new nodersa(server_public);
-var privateKey = new nodersa(server_private);
 
 var status = {
 	notReady : {
@@ -62,41 +26,42 @@ var status = {
 };
 
 module.exports.newSession = function(req, res) {
-	var sessionFields = req.body;
-	var randomData;
+	var sessionFields = req.body.session;
+	var includeSelf = req.body.includeSelf;
 	var self = [];
-	console.log(sessionFields.invited_participants);
-
-	var remainingInvites = sessionFields.invited_participants;
+	var asyncTasks = [];
+	var invites = sessionFields.emails.slice();
+	var remainingInvites = sessionFields.emails.slice();
 	var selfIndex;
-
-	if(sessionFields.includeSelf) {
+	var allData = [sessionFields.randomData];
+	if(includeSelf) {
 		self.push(req.user.email);
 		selfIndex = remainingInvites.indexOf(req.user.email);
 		if(selfIndex > -1) remainingInvites.splice(selfIndex, 1);
 	}
-
-	var asyncTasks = [];
-	randomData = genotypes.generateRandomData();
 	SessionModel.create({
 		created_by : req.user.email,
 		title : sessionFields.title,
 		description : sessionFields.description,
-		random_data : randomData,
-		invited_participants : sessionFields.invited_participants,
+		invited_participants : invites,
+		current_data : sessionFields.randomData,
 		pending_invited_participants : remainingInvites,
-		confirmed_invited_participants : self
+		instructions : sessionFields.instructions,
+		confirmed_invited_participants : self,
+		all_data : allData
 	},
 	function(err, session) {
 		if(err) return handle(err);
 
-		asyncTasks.push(function(callback) {
-			UserModel.findOneAndUpdate( 
-				{ email : sessionFields.invited_participants }, 
-				{ $push: { pending_invites : session._id } }, 
-				function(err, user) {
-					if(err) return handle(err);
-					callback();
+		remainingInvites.forEach(function(email) {
+			asyncTasks.push(function(callback) {
+				UserModel.findOneAndUpdate( 
+					{ email : email }, 
+					{ $push: { pending_invites : session._id } }, 
+					function(err, user) {
+						if(err) return handle(err);
+						callback();
+				});
 			});
 		});
 
@@ -168,7 +133,7 @@ module.exports.invite = function(req, res) {
 	UserModel.findOne({ email : fields.email }, function(err, user) {
 		if(err) return handle(err);
 		if(user) {
-			res.sendStatus(200);
+			res.send(user.public_key);
 		} else {
 			res.sendStatus(400);
 		}
@@ -181,6 +146,7 @@ function processSession(session) {
 	temp.created_by = session.created_by;
 	temp.title = session.title;
 	temp.description = session.description;
+	temp.instructions = session.instructions;
 	temp.invited_participants = session.invited_participants;
 	temp.confirmed_invited_participants = session.confirmed_invited_participants;
 	temp.pending_invited_participants = session.pending_invited_participants;
@@ -213,7 +179,7 @@ module.exports.acceptInvite = function(req, res) {
 			function(err, session) {
 				if(err) return handle(err);
 				console.log(session.confirmed_invited_participants.length);
-				if(session.confirmed_invited_participants.length + 1 >= 2 && Number(session.status.code) === 0) {
+				if(session.confirmed_invited_participants.length + 1 >= 3 && Number(session.status.code) === 0) {
 					console.log('READY');
 					session.status = status.ready;
 					session.save(function(err) {
@@ -276,8 +242,6 @@ module.exports.startSession = function(req, res) {
 				if(user) {
 					session.current_user = user.email;
 					session.markModified('current_user');
-					key = new nodersa(user.public_key, { environment : 'browser' });
-					session.current_data = key.encrypt(session.random_data, 'base64');
 					session.save(function(err) {
 						if(err) return handle(err);
 						return res.sendStatus(200);
@@ -318,25 +282,10 @@ module.exports.submitData = function(req, res) {
 			if(session.next_user === 'server') {
 				console.log('the server is doing stuff')
 				session.current_user = '';
-				session.next_user = '';
-				randomData = session.random_data;
-				decryptedData = privateKey.decrypt(encryptedData);
-				debuffered = decryptedData.toString();
-				debufferedObject = JSON.parse(debuffered);
-				i = 0;
-				finalAggregate.case = debufferedObject.case.map(function(element) {
-					return element - randomData.case[i++];
-				});
-				i = 0;
-				finalAggregate.control = debufferedObject.control.map(function(element) {
-					return element - randomData.control[i++];
-				});
 
-				session.aggregate_data = finalAggregate;
 				session.status = status.complete;
 				session.markModified('current_user');
 				session.markModified('next_user');
-				session.markModified('aggregate_data');
 				session.markModified('status');
 				session.save(function(err) {
 					if(err) return handle(err);
@@ -375,7 +324,12 @@ module.exports.getPublicKey = function(req, res) {
 		if(err) return handle(err);
 		if(session) {
 			if(session.next_user === 'server') {
-				return res.send(server_public);
+				UserModel.findOne({ email : session.created_by }, function(err, user) {
+					if(err) return handle(err);
+					if(user) {
+						res.send(user.public_key);
+					}
+				});
 			} 
 
 			UserModel.findOne({ email : session.next_user }, function(err, user) {

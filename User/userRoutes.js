@@ -95,3 +95,14 @@ module.exports.storePublicKey = function(req, res) {
 		}
 	});
 }
+
+module.exports.getOwnPublic = function(req, res) {
+	var email = req.user.email;
+
+	UserModel.findOne({ email : email }, function(err, user) {
+		if(err) return handle(err);
+		if(user) {
+			return res.send(user.public_key);
+		}
+	});
+}

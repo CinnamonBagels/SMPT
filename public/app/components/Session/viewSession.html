@@ -32,12 +32,26 @@
 				<div class="alert-box" ng-class="{ 'alert' : status[0], 'warning' : status[1], 'success' : status[2], 'info' : status[3] }"></div>
 			</div>
 		</div>
-		<hr>
 		<div class="row">
 			<div class="columns large-8">
-				<span class="description">
-					{{session.description}}
-				</span>
+				<dl class="sub-nav">
+				  <dd ng-class="{ 'active' : subnav.description }"><a ng-model="subnav.description" ng-click="showDescription()">Description</a></dd>
+				  <dd ng-class="{ 'active' : subnav.instructions }"><a ng-model="subnav.instructions" ng-click="showInstructions()">Instructions</a></dd>
+				  <dd ng-class="{ 'active' : subnav.participants }"><a ng-model="subnav.participants" ng-click="showParticipants()">Invited Participants</a></dd>
+				</dl>
+				<div class="row" ng-show="subnav.description">
+					<p class="description">
+						{{session.description}}
+					</p>
+				</div>
+				<div class="row" ng-show="subnav.instructions">
+					{{session.instructions}}
+				</div>
+				<div class="row" ng-show="subnav.participants">
+					<div ng-repeat="participant in participants">
+						{{participant}}
+					</div>
+				</div>
 			</div>
 			<div class="columns large-4">
 				

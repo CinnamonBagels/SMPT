@@ -2,11 +2,12 @@ angular.module('app')
 .factory('AccountService', ['$http', '$window', function($http, $window) {
 	var worker;
 	var keypair;
+	var ctrlScope;
 
 	function generateKeyPair(callback) {
 		if(typeof Worker !== 'undefined') {
+			ctrlScope.keypairProgress = '75%';
 			worker = new Worker('./assets/js/bundle.js');
-
 			worker.onmessage = function(event) {
 				return callback(event.data);
 			}
@@ -29,12 +30,13 @@ angular.module('app')
 	}
 
 	return {
-		createKeypair : function(callback) {
+		createKeypair : function(scope, callback) {
+			ctrlScope = scope;
 			if(typeof localStorage !== 'undefined') {
 				generateKeyPair(function(keypair) {
 					localStorage.setItem($window.sessionStorage.email + '_private_key', keypair.private);
-					callback();
 					sendKey(keypair.public);
+					callback();
 				});
 			} else {
 				//you have no local storage, please use a browser that has local storage.

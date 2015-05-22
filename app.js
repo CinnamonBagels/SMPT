@@ -29,8 +29,6 @@ var db = require('./DB/databaseConnection');
 var User = require('./DB/Models/userModel');
 var Session = require('./DB/Models/sessionModel');
 
-var genotypes = require('./Data/genotypes');
-
 app.set('port', process.env.PORT || 3000);
 
 
@@ -55,6 +53,7 @@ app.post('/login', userRoutes.postLogin);
 app.post('/logout', userRoutes.postLogout);
 
 app.post('/account/publickey', tokenAuth, userRoutes.storePublicKey);
+app.get('/account/getOwnPublic', tokenAuth, userRoutes.getOwnPublic);
 
 app.get('/sessions/pendingInvites', tokenAuth, sessionRoutes.getPendingInvites);
 app.get('/sessions/activeSessions', tokenAuth, sessionRoutes.getActiveSessions);

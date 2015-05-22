@@ -15,10 +15,9 @@ angular.module('app')
 
 		newSession : function(session, includeSelf) {
 			return $http.post('/sessions/newSession', 
-				{ title : session.title, 
-				  description : session.description,
-				  invited_participants : session.emails,
-				  includeSelf : includeSelf
+				{
+					session : session,
+					includeSelf : includeSelf
 				});
 		},
 
@@ -55,6 +54,10 @@ angular.module('app')
 		
 		getNextPublicKey : function(id) {
 			return $http.get('/sessions/' + id + '/getPublicKey');
+		},
+
+		getOwnPublic : function() {
+			return $http.get('/account/getOwnPublic');
 		}
 	}
 }])

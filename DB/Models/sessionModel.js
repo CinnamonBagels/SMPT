@@ -17,8 +17,7 @@ var sessionModel = new Schema({
 	created_by : String,
 	title : String,
 	description : String,
-	random_data : { type : Object, default : {} },
-	aggregate_data : { type : Object, default : {} },
+	instructions : String,
 	invited_participants : { type : Object, default : [] },
 	pending_invited_participants : { type : Object, default : [] },
 	confirmed_invited_participants : { type : Object, default : [] },
@@ -27,7 +26,8 @@ var sessionModel = new Schema({
 	status : { type : Object, default : { code : 0, message : 'Not Ready' } },
 	current_user : String,
 	next_user : String,
-	current_data : String
+	current_data : String,
+	all_data : { type : Object, default : [] }
 });
 
 sessionModel.plugin(autoIncrement.plugin, 'Session')

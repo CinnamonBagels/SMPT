@@ -1,45 +1,41 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-var buffer = require('buffer');
-var nodeRSA = require('node-rsa');
-var sections;
-var key;
-var returnData;
-onmessage = function(e) {
-  sections = e.data.split(' ENDSECTION ');
+  var buffer = require('buffer');
+  var nodeRSA = require('node-rsa');
+  var sections;
+  var secretKey;
+  var publicKey;
+  var decrypted;
+  var decryptedJSON;
+  var unencrypted;
+  var encrypted;
+  var combinedData;
+  var i;
+  onmessage = function(e) {
+    if(e.data.submitData) {
+      secretKey = new nodeRSA(e.data.secret, { environment : 'browser' });
+      decrypted = secretKey.decrypt(e.data.current_data);
+      console.log(decrypted, decrypted.toString());
 
-  //will be sent decrypt, data, privatekey
-  /*
-  THIS WILL DECRYPT THE DATA AND PASS IT BACK AS A STRING
-   */
-  if(sections[0] === 'decrypt') {
-    console.log('decrypting with secret key');
-    //sections2 is the key
-    key = new nodeRSA(sections[2], { environment : 'browser' });
-    returnData = key.decrypt(sections[1]);
-    console.log(returnData.toJSON());
-    console.log(returnData.toString());
-    postMessage(['decrypted',
-      'ENDSECTION',
-      returnData.toString()
-      ].join(' '));
-    delete key;
-  }
+      decryptedJSON = JSON.parse(decrypted.toString());
 
-  //will be sent encrypt, data, publickey
-  /*
-    THIS WILL ENCRYPT THE STRING DATA AND PASS BACK THE ENCRYPT STRING
-   */
-  if(sections[0] === 'encrypt') {
-    key = new nodeRSA(sections[2], { environment : 'browser' });
-    returnData = key.encrypt(sections[1], 'base64');
-    console.log(returnData);
-    postMessage(['encrypted',
-      'ENDSECTION',
-      returnData
-      ].join(' '));
-    delete key;
+      i = 0;
+      console.log(decryptedJSON)
+      combinedData = decryptedJSON.map(function(data) {
+        return Number(e.data.submitted_data[i++]) + Number(data);
+      });
+
+      publicKey = new nodeRSA(e.data.public, { environment : 'browser' });
+      encrypted = publicKey.encrypt(combinedData, 'base64');
+
+      postMessage(encrypted);
+    }
+
+    if(e.data.newSession) {
+      publicKey = new nodeRSA(e.data.public, { environment : 'browser' });
+      encrypted = publicKey.encrypt(e.data.randomData, 'base64');
+      postMessage(encrypted);
+    }
   }
-}
 },{"buffer":26,"node-rsa":9}],2:[function(require,module,exports){
 // Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
 

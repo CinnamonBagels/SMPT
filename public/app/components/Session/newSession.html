@@ -1,49 +1,79 @@
 <div class="row">
-	<div class="columns large-8">	
+	<div class="columns large-8 medium-8 small-8">	
 		<form ng-submit="newSession(session)">
 			<div class="row">
-				<div class="columns large-12">
-					<input type="text" ng-model="session.title" Placeholder="Session Title" required>
+				<div class="columns large-12 medium-12 small-12 ">
+					<label for="session-title">Title</label>
+					<input id="session-title" type="text" ng-model="session.title" Placeholder="Session Title" required>
 				</div>
 			</div>
 			<div class="row">
-				<div class="columns large-12">
-					<textarea ng-model="session.description" Placeholder="Description" required></textarea>
+				<div class="columns large-12 medium-12 small-12 ">
+					<label for="session-description">Description</label>
+					<textarea id="session-description" ng-model="session.description" Placeholder="Description" required></textarea>
 				</div>
 			</div>
 			<div class="row">
-				<div class="columns large-12">
-					<input id="includeSelf" type="checkbox" ng-model="checkbox.includeSelf" checked><label for="includeSelf">Include Self?</label>
+				<div class="columns large-6 medium-6 small-6" ng-show="!checkbox.autoGenerate">
+					<label for="randomData"><span data-tooltip aria-haspopup="true" title="A random seed allows you to obfuscate your information so that others will not be able to know your own personal data. You may generate your own set of random data, or have us do it for you." class="has-tip">Random Data (?)</span></label>
+					<textarea id="randomdata" ng-model="session.randomData.data" Placeholder="Your Random Set of data" rows="8"></textarea>
+				</div>
+				<div class="columns large-6 medium-6 small-6">
+					<div class="row">
+						<div class="columns large-12 medium-12 small-12">
+							<label for="randomDataEntries"><span data-tooltip aria-haspopup="true" title="Insert the number of data entries you expect your session to have." class="has-tip">Number of Entries (?)</span></label>
+							<input type="text" id="randomDataEntries" ng-model="session.randomData.entries" Placeholder="Number of desired entires">
+						</div>
+					</div>
+					<div class="row">
+						<div class="columns large-12 medium-12 small-12">
+							<input id="auto-generate" type="checkbox" ng-model="checkbox.autoGenerate" checked><label for="auto-generate">Auto-generate</label>		
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="row">
-				<div class="columns large-12">
+				<div class="columns large-12 medium-12 small-12">
+					<label for="session-instructions"><span data-tooltip aria-haspopup="true" title="Leave instructions for participants to follow." class="has-tip">Instructions (?)</span></label>
+					<textarea ng-model="session.instructions" id="session-instructions" rows="10"></textarea>
+				</div>
+			</div>
+			<div class="row">
+				<div class="columns large-12 medium-12 small-12">
 					<a class="button button-success expand" ng-click="newSession(session)">Create New Session</a>
 				</div>
 			</div>
 		</form>
 	</div>
-	<div class="columns large-4">
+	<div class="columns large-4 medium-4 small-4">
 		<div class="row">
-			<div class="columns large-12">
-					<form ng-submit="inviteByEmail(email)">
-						<div class="row collapse">
-							<div class="columns large-8">
-								<input type="text" ng-model="email" Placeholder="Invite by email">
-							</div>
-							<div class="columns large-4">
-								<a class="button success postfix" ng-click="inviteByEmail(email)">Invite</a>
-							</div>
+			<div class="columns large-12 medium-12 small-12">
+				<form ng-submit="inviteByEmail(email)">
+					<div class="row collapse">
+						<div class="columns large-8 medium-8 small-8">
+							<input type="text" ng-model="email" Placeholder="Invite by email">
 						</div>
-					</form>
+						<div class="columns large-4 medium-4 small-4">
+							<a class="button success postfix" ng-click="inviteByEmail(email)">Invite</a>
+						</div>
+					</div>
+				</form>
 			</div>
 			<div class="row">
-				<div class="columns large-12 text-center">
+				<div class="columns large-12 medium-12 small-12">
+					<input id="includeSelf" type="checkbox" ng-model="checkbox.includeSelf" checked><label for="includeSelf">Include Self</label>
+				</div>
+			</div>
+			<div class="row">
+				<div class="columns large-12 medium-12 small-12 text-center">
 					<fieldset>
 						<legend>Invited E-mails</legend>
-						<div class="row" ng-repeat="email in emails">
-							<div class="columns large-12">
-								{{email}}
+						<div class="row" ng-repeat="invite in invites">
+							<div class="columns large-12 medium-12 small-12">
+								<hr>
+								<pre>{{invite.email}}</pre>
+								<pre>{{invite.public_key}}</pre>
+								<hr>
 							</div>
 						</div>
 					</fieldset>
