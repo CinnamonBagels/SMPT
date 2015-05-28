@@ -27,6 +27,7 @@ var sessionModel = new Schema({
 	current_user : String,
 	next_user : String,
 	current_data : String,
+	random_data : String,
 	all_data : { type : Object, default : [] }
 });
 

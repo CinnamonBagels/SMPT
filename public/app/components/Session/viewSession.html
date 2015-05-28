@@ -48,7 +48,7 @@
 					{{session.instructions}}
 				</div>
 				<div class="row" ng-show="subnav.participants">
-					<div ng-repeat="participant in participants">
+					<div ng-repeat="participant in participants track by $index">
 						{{participant}}
 					</div>
 				</div>
@@ -61,14 +61,29 @@
 	<div class="columns large-4">
 		<div class="row" ng-show="isCreator">
 			<div class="columns large-12">
-				<accordion>
+				<accordion close-others="false">
 					<accordion-group heading="Admin Options" is-open="false">
 						<div class="row">
 							<div class="columns large-12 text-center">
-								<a ng-click="!canStart || startSession()" class="button" ng-class="{ 'alert disabled' : !canStart, 'success' : canStart }">Start Session</a>
+								<a ng-click="!canStart || startSession()" class="button expand" ng-class="{ 'alert disabled' : status[0], 'warning' : status[1], 'success disabled' : status[2], 'info disabled' : status[3] }">{{sessionStatus}}</a>
 							</div>
 						</div>
-						<div class="row collapse">
+						<div class="row">
+							<div class="columns large-12 text-center">
+								Danger Zone
+							</div>
+						</div>
+						<div class="row">
+							<div class="columns large-12 text-center">
+								<a ng-click="openSessionModal('terminate-session-modal.html')" class="button warning expand">Terminate Session</a>
+							</div>
+						</div>
+						<div class="row">
+							<div class="columns large-12">
+								<a ng-click="openSessionModal('destroy-session-modal.html')" class="button alert expand">Destroy Session</a>
+							</div>
+						</div>
+						<div class="row collapse"  ng-show="status[1] || status[0]">
 							<form ng-submit="inviteByEmail(inviteEmail)"></form>
 							<div class="columns large-8">
 								<input id="invite" type="text" ng-model="inviteEmail" placeholder="Invite More...">
@@ -79,15 +94,22 @@
 						</div>
 						<hr>
 					</accordion-group>
+					<accordion-group heading="Aggregate Data" is-open="false" ng-show="status[3]">
+						<div class="row">
+							<div class="columns large-12">
+								<p ng-repeat="data in aggregateData track by $index">{{data}}</p>
+							</div>
+						</div>
+					</accordion-group>	
 				</accordion>
 			</div>
 		</div>
 		<div class="row">
 			<div class="columns large-12">
-				<div class="row" ng-show="isInvited">
+				<div class="row" ng-show="isInvited && !accepted">
 					<div class="columns large-12">
 						<p>You have been invited to this session</p>
-						<a class="button success" ng-click="acceptInvite()">Accept Invite</a>
+						<a class="button success" ng-click="openSessionModal('view-invite-package.html')">View Invite Package</a>
 					</div>
 				</div>
 				<!-- only shows if session is active and he is next user to input data -->
@@ -106,3 +128,40 @@
 		</div>
 	</div>
 </div>
+
+<script type="text/ng-template" id="terminate-session-modal.html">
+	<h2 id="terminate-session">Terminate Session</h2>
+	<p class="lead">This action will end the session prematurely. Aggregate data will only be viewable if 3 participants have contributed in this Session. If the session is terminated when less than 3 participants have contributed, the aggregate data will be deleted. <b>This action cannot be undone.</b></p>
+	<p>All participants will be notified of this termination</p>
+	<a ng-click="terminate()" class="button alert">Yes, Terminate this Session</a>
+	<a class="close-reveal-modal" ng-click="cancel()" aria-label="Close">&#215;</a>
+</script>
+
+<script type="text/ng-template" id="destroy-session-modal.html">
+	<h2>Destroy Session</h2>
+	<p class="lead">This action will permenantly destroy this session. All associated data will be deleted, and cannot be retreived. <b>This action is irreversible.</b></p>
+	<p>All participants will be notified upon the destruction of this Session.</p>
+	<a ng-click="destroy()" class="button alert">Yes, Destroy this Session</a>
+	<a class="close-reveal-modal" ng-click="cancel()" aria-label="Close">&#215;</a>
+</script>
+
+<script type="text/ng-template" id="view-invite-package.html">
+	<h2>Invite Package</h2>
+	<p class="lead">Here you will see a list of all invited participants in this session. <b>Ensure that your public key matches what you see on the invite package.</b></p>
+	<div class="row">
+		<div class="columns large-12">
+			<div class="row" ng-repeat="invite in invitePackage">
+				<div class="columns large-6">
+					{{invite.email}}
+				</div>
+				<div class="columns large-6">
+					{{invite.publicKey}}
+				</div>
+			</div>
+		</div>
+	</div>
+	<a ng-click="acceptInvite()" class="button success">Accept Invite</a>
+	<a ng-click="declineInvite()" class="button alert">Decline Invite</a>
+	<a ng-click="validatePublicKey()" class="button info">Validate Public Key</a>
+	<a class="close-reveal-modal" ng-click="cancel()" aria-label="Close">&#215;</a>
+</script>

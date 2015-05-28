@@ -15,7 +15,7 @@
 			</div>
 			<div class="row">
 				<div class="columns large-6 medium-6 small-6" ng-show="!checkbox.autoGenerate">
-					<label for="randomData"><span data-tooltip aria-haspopup="true" title="A random seed allows you to obfuscate your information so that others will not be able to know your own personal data. You may generate your own set of random data, or have us do it for you." class="has-tip">Random Data (?)</span></label>
+					<label for="randomData"><span data-tooltip aria-haspopup="true" title="A random seed allows you to obfuscate your information so that others will not be able to know your own personal data. You may generate your own set of random data, or have us do it for you." class="has-tip">Manually Input Random Data (?)</span></label>
 					<textarea id="randomdata" ng-model="session.randomData.data" Placeholder="Your Random Set of data" rows="8"></textarea>
 				</div>
 				<div class="columns large-6 medium-6 small-6">
@@ -27,7 +27,7 @@
 					</div>
 					<div class="row">
 						<div class="columns large-12 medium-12 small-12">
-							<input id="auto-generate" type="checkbox" ng-model="checkbox.autoGenerate" checked><label for="auto-generate">Auto-generate</label>		
+							<input id="auto-generate" type="checkbox" ng-model="checkbox.autoGenerate" checked><label for="auto-generate">Auto-generate Random Data</label>		
 						</div>
 					</div>
 				</div>
@@ -59,25 +59,25 @@
 					</div>
 				</form>
 			</div>
-			<div class="row">
-				<div class="columns large-12 medium-12 small-12">
-					<input id="includeSelf" type="checkbox" ng-model="checkbox.includeSelf" checked><label for="includeSelf">Include Self</label>
-				</div>
+		</div>
+		<div class="row">
+			<div class="columns large-12 medium-12 small-12">
+				<input id="includeSelf" type="checkbox" ng-model="checkbox.includeSelf" checked><label for="includeSelf">Include Self</label>
 			</div>
-			<div class="row">
-				<div class="columns large-12 medium-12 small-12 text-center">
-					<fieldset>
-						<legend>Invited E-mails</legend>
-						<div class="row" ng-repeat="invite in invites">
-							<div class="columns large-12 medium-12 small-12">
-								<hr>
-								<pre>{{invite.email}}</pre>
-								<pre>{{invite.public_key}}</pre>
-								<hr>
-							</div>
+		</div>
+		<div class="row">
+			<div class="columns large-12 medium-12 small-12 text-center">
+				<fieldset>
+					<legend>Invited E-mails</legend>
+					<div class="row" ng-repeat="invite in invites">
+						<div class="columns large-12 medium-12 small-12">
+							<hr>
+							<pre>{{invite.email}}</pre>
+							<pre>{{invite.public_key}}</pre>
+							<hr>
 						</div>
-					</fieldset>
-				</div>
+					</div>
+				</fieldset>
 			</div>
 		</div>
 	</div>

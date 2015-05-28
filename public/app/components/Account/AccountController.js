@@ -24,7 +24,7 @@ angular.module('app')
 
 	$scope.createKeypair = function() {
 		showProgress();
-		AccountService.createKeypair($scope, function() {
+		AccountService.createKeypair(function() {
 			$scope.keypairProgress = '100%';
 			$scope.keypair.keypair_status = 'Created Keypair!';
 			hideProgress();

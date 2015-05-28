@@ -9,31 +9,61 @@
   var unencrypted;
   var encrypted;
   var combinedData;
+  var initialRandomData;
+  var decryptedCurrentData;
   var i;
   onmessage = function(e) {
     if(e.data.submitData) {
-      secretKey = new nodeRSA(e.data.secret, { environment : 'browser' });
-      decrypted = secretKey.decrypt(e.data.current_data);
-      console.log(decrypted, decrypted.toString());
+      try {
+        secretKey = new nodeRSA(e.data.secret, { environment : 'browser' });
+        decrypted = secretKey.decrypt(e.data.current_data);
+        console.log(secretKey.decrypt(e.data.current_data).toString());
 
-      decryptedJSON = JSON.parse(decrypted.toString());
+        decryptedJSON = JSON.parse(decrypted.toString());
 
-      i = 0;
-      console.log(decryptedJSON)
-      combinedData = decryptedJSON.map(function(data) {
-        return Number(e.data.submitted_data[i++]) + Number(data);
-      });
+        i = 0;
+        console.log(decryptedJSON)
+        combinedData = decryptedJSON.map(function(data) {
+          return Number(e.data.submitted_data[i++]) + Number(data);
+        });
 
-      publicKey = new nodeRSA(e.data.public, { environment : 'browser' });
-      encrypted = publicKey.encrypt(combinedData, 'base64');
-
-      postMessage(encrypted);
+        publicKey = new nodeRSA(e.data.public, { environment : 'browser' });
+        encrypted = publicKey.encrypt(combinedData, 'base64');
+        console.log(combinedData);
+        postMessage(encrypted);
+      } catch(error) {
+        postMessage('error');
+      }
     }
 
     if(e.data.newSession) {
-      publicKey = new nodeRSA(e.data.public, { environment : 'browser' });
-      encrypted = publicKey.encrypt(e.data.randomData, 'base64');
-      postMessage(encrypted);
+      try {
+        console.log(e.data.randomData);
+        publicKey = new nodeRSA(e.data.public, { environment : 'browser' });
+        encrypted = publicKey.encrypt(e.data.randomData, 'base64');
+        postMessage(encrypted);
+      } catch(error) {
+        postMessage('error');
+      }
+    }
+
+    if(e.data.finalData) {
+      try {
+        secretKey = new nodeRSA(e.data.secret, { environment : 'browser' });
+        decryptedCurrentData = JSON.parse(secretKey.decrypt(e.data.currentData).toString());
+        initialRandomData = JSON.parse(secretKey.decrypt(e.data.randomData).toString());
+        console.log(decryptedCurrentData);
+        console.log(initialRandomData);
+        i = 0;
+        combinedData = decryptedCurrentData.map(function(data) {
+          return data - initialRandomData[i++];
+        });
+
+        postMessage(combinedData);
+      } catch(error) {
+        console.log(error);
+        postMessage('error');
+      }
     }
   }
 },{"buffer":26,"node-rsa":9}],2:[function(require,module,exports){

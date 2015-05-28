@@ -48,6 +48,7 @@ module.exports.newSession = function(req, res) {
 		pending_invited_participants : remainingInvites,
 		instructions : sessionFields.instructions,
 		confirmed_invited_participants : self,
+		random_data : sessionFields.randomData,
 		all_data : allData
 	},
 	function(err, session) {
@@ -151,6 +152,7 @@ function processSession(session) {
 	temp.confirmed_invited_participants = session.confirmed_invited_participants;
 	temp.pending_invited_participants = session.pending_invited_participants;
 	temp.status = session.status;
+	temp.random_data = session.random_data;
 	temp.current_data = session.current_data;
 	temp.current_user = session.current_user;
 	return temp;
@@ -264,26 +266,19 @@ function finishSession() {
 	add current user to complete users
  */
 module.exports.submitData = function(req, res) {
-	console.log(req.params);
 	var id = req.params.id;
-	console.log(id);
 	var encryptedData = req.body.data;
-	var decryptedData;
-	var debuffered;
-	var debufferedObject;
-	var randomData;
-	var finalAggregate = {};
-	var i;
 	SessionModel.findOne({ _id : id }, function(err, session) {
 		if(err) return handle(err);
 		if(session) {
-			console.log(session.next_user);
-			console.log(session.next_user === 'server');
 			if(session.next_user === 'server') {
 				console.log('the server is doing stuff')
 				session.current_user = '';
-
+				session.all_data.push(encryptedData);
 				session.status = status.complete;
+				session.current_data = encryptedData;
+				session.markModified('all_data');
+				session.markModified('current_data');
 				session.markModified('current_user');
 				session.markModified('next_user');
 				session.markModified('status');
@@ -292,17 +287,14 @@ module.exports.submitData = function(req, res) {
 					return res.sendStatus(200);
 				});
 			} else {
-				//set data, 
-				//add current user to completed user
-				//set current user to next user
-				//set next user to current user if server or next
-				//
 				session.current_data = encryptedData;
+				session.all_data.push(encryptedData);
 				session.completed_data_participants.push(session.current_user);
 				session.current_user = session.next_user;
 				session.next_user = session.pending_data_participants.length === 0 ? 'server' : session.pending_data_participants.shift();
 				session.markModified('current_data');
 				session.markModified('current_user');
+				session.markModified('all_data');
 				session.markModified('next_user');
 				session.markModified('pending_data_participants');
 				session.markModified('completed_data_participants');

@@ -32,22 +32,22 @@ angular.module('app')
 		var invites = $scope.invites;
 		var randomData = $scope.session.randomData.data.split('\n');
 		var entries = $scope.session.randomData.entries;
-		var generateData = $scope.checkbox.generateData;
+		var generateData = $scope.checkbox.autoGenerate;
 		var includeSelf = $scope.checkbox.includeSelf;
 		session.emails = emails;
 		session.instructions = $scope.session.instructions;
 		session.description = $scope.session.description;
 		session.title = $scope.session.title;
 
-		if($scope.checkbox.includeSelf) session.emails.push(ownEmail);
 		
 		///error checking
-		if(isNaN(Number(entries))) return;
-		if(session.emails.length < 3) return;
+		if(isNaN(entries)) return;
+		if(session.emails.length < 2) return;
+		if($scope.checkbox.includeSelf) session.emails.push(ownEmail);
 		if(generateData) data = generateRandomData(entries);
 		else data = randomData;
-
-		SessionService.getOwnPublic().success(function(data, status) {
+		console.log(data);
+		SessionService.getOwnPublic().success(function(key, status) {
 			worker = new Worker('./vendor/nodersabuffer.js');
 
 			worker.onmessage = function(e) {
@@ -60,7 +60,7 @@ angular.module('app')
 			}
 			worker.postMessage({
 				newSession : true,
-				public : data,
+				public : key,
 				randomData : JSON.stringify(data)
 			});
 		});
