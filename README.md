@@ -19,8 +19,8 @@ do not know individual components)
 ## Example cont.
 
 R - Represents the random seed
-1. R
-2. R + 10 = R + 10
-3. R + 10 + 20 = R + 30
-4. R + 10 + 20 + 30 = R + 60
-5. Final - R + 60 - R = 60 (Aggregate)
+1.  R
+2.  R + 10 = R + 10
+3.  R + 10 + 20 = R + 30
+4.  R + 10 + 20 + 30 = R + 60
+5.  Final - R + 60 - R = 60 (Aggregate)
